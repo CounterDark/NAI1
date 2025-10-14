@@ -42,9 +42,6 @@ class Move:
     def __str__(self):
         return f"Move(x={self.x}, y={self.y})"
 
-    def __hash__(self) -> int:
-        return hash((self.x, self.y))
-
 
 _INSTRUCTION_TO_MOVE: dict[str, Move] = {
     "up": Move(-1, 0),
