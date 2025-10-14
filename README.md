@@ -51,6 +51,21 @@ uv run python src/main.py
 
 While playing, type one of the allowed moves: `up`, `down`, `left`, `right`, `upleft`, `upright`, `downleft`, `downright`.
 
+### CLI arguments
+
+You can configure the game via command line arguments:
+
+- `--size <int>`: Board size (odd integer, minimum 5). Default: `5`.
+- `--depth <int>`: AI search depth for Negamax (number of moves the AI thinks ahead). Default: `10`.
+- `--help`: Show help and exit.
+
+Examples:
+
+```
+uv run python src/main.py --size 7 --depth 12
+make run ARGS="--size 9 --depth 8"
+```
+
 ## Game rules
 
 The game is played on the Square board of odd size (minimum 5x5). Player 1 begins first turn. Each player starts in the opposite corner of the board and take alternating turns moving on the board. Each player can move to any of the 8 neighboring cells (orthogonal or diagonal), using the commands listed above. A move is considered legal if it's within board bounds, target square is unoccupied by other player and and no player was positioned on this field in the previous turns. Cells previously occupied by a player become blocked and are marked as `-1`. A player loses if they have no legal moves on their turn; thus, the opponent wins.

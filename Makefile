@@ -6,7 +6,7 @@ setup:
 	uv sync
 
 run:
-	uv run python src/main.py
+	uv run python src/main.py $(ARGS)
 
 clean:
 	rm -rf .venv

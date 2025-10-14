@@ -43,6 +43,21 @@ uv run python src/main.py
 While playing, type one of the allowed moves: `up`, `down`,
 `left`, `right`, `upleft`, `upright`, `downleft`, `downright`.
 
+### CLI arguments
+
+You can configure the game via command line arguments:
+
+- `--size <int>`: Board size (odd integer, minimum 5). Default: `5`.
+- `--depth <int>`: AI search depth for Negamax (number of moves the
+AI thinks ahead). Default: `10`.
+- `--help`: Show help and exit.
+
+Examples:
+
+```
+uv run python src/main.py --size 7 --depth 12
+make run ARGS="--size 9 --depth 8"
+```
 
 ## Game rules
 The game is played on the Square board of odd size (minimum 5x5).
@@ -62,6 +77,7 @@ Authors: Mateusz Anikiej and Aleksander Kunkowski
 
 from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax  # type: ignore
 from board_manager import BoardManager
+import argparse
 
 
 class TNTFrog(TwoPlayerGame):
@@ -128,9 +144,47 @@ class TNTFrog(TwoPlayerGame):
         return 0 if self.lose() else 1  # For the AI
 
 
-# Start a match (and store the history of moves when it ends)
-ai = Negamax(10)  # The AI will think 10 moves in advance
-game = TNTFrog([Human_Player(), AI_Player(ai)], 5)
-history = game.play()
-winner = 2 if game.current_player == 1 else 1
-print(f"Player {winner} wins!")
+def parse_args() -> argparse.Namespace:
+    """
+    Parse CLI arguments for configuring the game.
+
+    --size: Board size (odd integer, >= 5)
+    --depth: AI search depth (how many moves ahead the AI thinks)
+    --help: Show help and exit
+    """
+    parser = argparse.ArgumentParser(
+        prog="uv run python src/main.py",
+        description=(
+            "Console board game with a basic AI opponent. "
+            "Player 1 (human) plays against Player 2 (AI)."
+        ),
+    )
+    parser.add_argument(
+        "--size",
+        type=int,
+        default=5,
+        help="Board size (odd integer, minimum 5). Default: 5",
+    )
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default=10,
+        help="AI search depth for Negamax. Default: 10",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    """
+    Entry point for running the TNTFrog game with configurable options.
+    """
+    args = parse_args()
+    ai = Negamax(args.depth)
+    game = TNTFrog([Human_Player(), AI_Player(ai)], args.size)
+    game.play()
+    winner = 2 if game.current_player == 1 else 1
+    print(f"Player {winner} wins!")
+
+
+if __name__ == "__main__":
+    main()
