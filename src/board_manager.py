@@ -1,8 +1,15 @@
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import dataclass
 from typing import Literal
 
 
 def _validate_board_size(size: int) -> int:
+    """
+    Validate if the board size is an odd integer and greater than or equal to
+    the minimal size.
+
+    :param size: The size of the board.
+    :return size: The validated board size.
+    """
     if not isinstance(size, int):
         raise TypeError("Size must be of type int!")
     if size < BoardManager.MINIMAL_SIZE:
@@ -15,6 +22,12 @@ def _validate_board_size(size: int) -> int:
 
 
 def _validate_player(player: Literal[1, 2]) -> Literal[1, 2]:
+    """
+    Validate if the player value is either 1 or 2.
+
+    :param player: A player, 1 or 2.
+    :return player: The validated player.
+    """
     if player not in [1, 2]:
         raise ValueError("Invalid player!")
     return player
@@ -26,7 +39,13 @@ type Direction = Literal[-1, 0, 1]
 
 @dataclass
 class Position:
-    _: KW_ONLY
+    """
+    A position on the board.
+
+    :param x: The x coordinate of the position.
+    :param y: The y coordinate of the position.
+    """
+
     x: int
     y: int
 
@@ -36,13 +55,18 @@ type Players = dict[int, Position]
 
 @dataclass(frozen=True)
 class Move:
+    """
+    A move on the board.
+
+    :param x: The x coordinate of the move.
+    :param y: The y coordinate of the move.
+    """
+
     x: Direction
     y: Direction
 
-    def __str__(self):
-        return f"Move(x={self.x}, y={self.y})"
 
-
+# Mapping of textual instructions to Move objects
 _INSTRUCTION_TO_MOVE: dict[str, Move] = {
     "up": Move(-1, 0),
     "down": Move(1, 0),
@@ -54,6 +78,7 @@ _INSTRUCTION_TO_MOVE: dict[str, Move] = {
     "downright": Move(1, 1),
 }
 
+# Mapping of Move objects to textual instructions
 _MOVE_TO_INSTRUCTION: dict[Move, str] = {
     move: name for name, move in _INSTRUCTION_TO_MOVE.items()
 }
@@ -85,6 +110,12 @@ def from_move(move: Move) -> str:
 
 
 class BoardManager:
+    """
+    A manager for the board.
+
+    :param size: The size of the board.
+    """
+
     MINIMAL_SIZE = 5
 
     def __init__(self, size: int):
@@ -109,6 +140,9 @@ class BoardManager:
     def print_move_options(self, moves: list[str], player: Literal[1, 2]) -> None:
         """
         Prints the possible moves for the given player.
+
+        :param moves: A list of possible moves as Move objects.
+        :param player: A player, 1 or 2.
         """
         print(f"Possible moves for player {player}: {", ".join(moves)}", end="\n")
 
@@ -169,12 +203,20 @@ class BoardManager:
     def _is_in_board_bounds(self, x: int, y: int) -> bool:
         """
         Check if the given coordinates are in the board bounds.
+
+        :param x: The x coordinate of the field.
+        :param y: The y coordinate of the field.
+        :return is_in_bounds: True if the field is in the board bounds, False otherwise.
         """
         return 0 <= x < self._size and 0 <= y < self._size
 
     def _is_empty_field(self, x: int, y: int) -> bool:
         """
         Check if the given field is empty.
+
+        :param x: The x coordinate of the field.
+        :param y: The y coordinate of the field.
+        :return is_empty: True if the field is empty, False otherwise.
         """
         return self._board[x][y] == 0
 
@@ -187,6 +229,8 @@ class BoardManager:
         :return board: A modified board.
         """
         player = _validate_player(player)
+
+        # Convert the move string to a Move object
         _move = to_move(move)
 
         new_position = Position(

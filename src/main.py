@@ -1,3 +1,65 @@
+"""
+Main module for the TNTFrog game.
+
+## Prerequisites
+
+1. Python 3.13 installed (ensure `python --version` shows 3.13+)
+2. `uv` installed, instructions to install uv:
+https://docs.astral.sh/uv/getting-started/installation/
+
+## Setup
+
+Use `uv` to create a virtual environment and install dependencies
+from `pyproject.toml`.
+
+Option A: using Makefile
+
+```sh
+make setup
+```
+
+Option B: using uv directly
+
+```sh
+uv sync
+```
+
+## Run
+
+Start the game in the console.
+
+Option A: using Makefile
+
+```sh
+make run
+```
+
+Option B: using uv directly
+
+```sh
+uv run python src/main.py
+```
+
+While playing, type one of the allowed moves: `up`, `down`,
+`left`, `right`, `upleft`, `upright`, `downleft`, `downright`.
+
+
+## Game rules
+The game is played on the Square board of odd size (minimum 5x5).
+Player 1 begins first turn. Each player starts in the opposite
+corner of the board and take alternating turns moving on the
+board. Each player can move to any of the 8 neighboring cells
+(orthogonal or diagonal), using the commands listed above. A
+move is considered legal if it's within board bounds, target
+square is unoccupied by other player and and no player was
+positioned on this field in the previous turns. Cells previously
+occupied by a player become blocked and are marked as `-1`. A
+player loses if they have no legal moves on their turn; thus,
+the opponent wins.
+
+Authors: Mateusz Anikiej and Aleksander Kunkowski
+"""
+
 from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax  # type: ignore
 from board_manager import BoardManager
 
@@ -13,18 +75,41 @@ class TNTFrog(TwoPlayerGame):
         self.first_round = True
 
     def possible_moves(self):
+        """
+        Get all the possible moves for the current player.
+
+        :return possible_moves: A list of possible moves as Move objects.
+        """
         return self.game.get_possible_moves(self.current_player)
 
     def make_move(self, move):
+        """
+        Make a move on the board.
+
+        :param move: A move as a string.
+        """
         self.game.make_move(move, self.current_player)
 
     def lose(self):
+        """
+        Check if the current player has no legal moves.
+
+        :return lose: True if the current player has no legal moves, False otherwise.
+        """
         return len(self.game.get_possible_moves(self.current_player)) <= 0
 
     def is_over(self):
+        """
+        Check if the game is over.
+
+        :return is_over: True if the game is over, False otherwise.
+        """
         return self.lose()  # Game stops when someone loses.
 
     def show(self):
+        """
+        Show the current state of the game.
+        """
         self.game.print()
         if self.first_round:
             if moves := self.game.get_possible_moves(self.current_player):
@@ -35,6 +120,11 @@ class TNTFrog(TwoPlayerGame):
                 self.game.print_move_options(moves, self.opponent_index)
 
     def scoring(self):
+        """
+        Score the game.
+
+        :return scoring: 0 if the current player has no legal moves, 1 otherwise.
+        """
         return 0 if self.lose() else 1  # For the AI
 
 
