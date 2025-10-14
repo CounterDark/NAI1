@@ -15,17 +15,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nai1"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "easyai" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "easyai", specifier = ">=2.0.12" }]
-
-[[package]]
 name = "numpy"
 version = "2.3.3"
 source = { registry = "https://pypi.org/simple" }
@@ -76,3 +65,14 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/47/c7/b0f6b5b67f6788a0725f744496badbb604d226bf233ba716683ebb47b570/numpy-2.3.3-cp314-cp314t-win_amd64.whl", hash = "sha256:b37a0b2e5935409daebe82c1e42274d30d9dd355852529eab91dab8dcca7419f", size = 13112576, upload-time = "2025-09-09T15:58:37.927Z" },
     { url = "https://files.pythonhosted.org/packages/06/b9/33bba5ff6fb679aa0b1f8a07e853f002a6b04b9394db3069a1270a7784ca/numpy-2.3.3-cp314-cp314t-win_arm64.whl", hash = "sha256:78c9f6560dc7e6b3990e32df7ea1a50bbd0e2a111e05209963f5ddcab7073b0b", size = 10545953, upload-time = "2025-09-09T15:58:40.576Z" },
 ]
+
+[[package]]
+name = "tntfrog"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "easyai" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "easyai", specifier = ">=2.0.12" }]
