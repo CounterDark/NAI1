@@ -6,4 +6,5 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "easyai>=2.0.12",
+    "gymnasium[classic-control]>=1.2.1",
 ]
