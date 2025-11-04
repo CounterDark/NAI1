@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Literal
 import gymnasium as gym
 from cart_controller import CartController
@@ -19,6 +20,8 @@ print(f"Starting observation: {observation}")
 episode_over = False
 total_reward = 0.0
 
+history = []
+
 while not episode_over:
     # Choose an action: 0 = push cart left, 1 = push cart right
     action = cart_controller.make_action(*observation)
@@ -32,6 +35,7 @@ while not episode_over:
 
     total_reward += float(reward)
     episode_over = terminated or truncated
+    sleep(1)
 
 print(f"Episode finished! Total reward: {total_reward}")
 env.close()

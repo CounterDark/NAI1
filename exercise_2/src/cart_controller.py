@@ -1,7 +1,6 @@
-from typing import Literal
 import numpy as np
 
-type Action = Literal[0, 1]
+from exercise_2.src.fuzzy_logic import Action
 
 
 class CartController:
@@ -29,4 +28,4 @@ class CartController:
             f"{cart_position=}, {cart_velocity=}, "
             f"{pole_angle=}, {pole_angular_velocity=}"
         )
-        return np.random.choice([0, 1])
+        return np.int64(1)
