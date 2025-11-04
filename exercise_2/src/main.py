@@ -21,8 +21,7 @@ total_reward = 0.0
 
 while not episode_over:
     # Choose an action: 0 = push cart left, 1 = push cart right
-    state = CartController.from_observation(observation)
-    action = cart_controller.make_action(state)
+    action = cart_controller.make_action(*observation)
 
     # Take the action and see what happens
     observation, reward, terminated, truncated, info = env.step(action)
