@@ -8,12 +8,20 @@ render_mode: Literal["human", "rgb_array"] = "human"
 env = gym.make("CartPole-v1", render_mode=render_mode)
 cart_controller = CartController()
 
+#Show member functions
+# cart_controller.fuzzy_logic.view()
+
 # Reset environment to start a new episode
 observation, info = env.reset()
 # observation: what the agent can "see" - cart position, velocity, pole angle, etc.
 # info: extra debugging information (usually not needed for basic learning)
 
-print(f"Starting observation: {observation}")
+print(f"Starting observation:", end="\n")
+print(f"CartPosition: {observation[0]}", end="\n")
+print(f"CartVelocity: {observation[1]}", end="\n")
+print(f"PoleAngle: {observation[2]}", end="\n")
+print(f"PoleVelocity: {observation[3]}", end="\n")
+
 # Example output: [ 0.01234567 -0.00987654  0.02345678  0.01456789]
 # [cart_position, cart_velocity, pole_angle, pole_angular_velocity]
 
@@ -24,7 +32,7 @@ history = []
 
 while not episode_over:
     # Choose an action: 0 = push cart left, 1 = push cart right
-    action = cart_controller.make_action(*observation)
+    action = cart_controller.make_action(*observation, verbose=True)
 
     # Take the action and see what happens
     observation, reward, terminated, truncated, info = env.step(action)
@@ -35,7 +43,6 @@ while not episode_over:
 
     total_reward += float(reward)
     episode_over = terminated or truncated
-    sleep(1)
 
 print(f"Episode finished! Total reward: {total_reward}")
 env.close()
