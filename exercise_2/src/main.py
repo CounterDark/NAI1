@@ -7,7 +7,7 @@ from cart_controller import CartController
 render_mode: Literal["human", "rgb_array"] = "human"
 env = gym.make("CartPole-v1", render_mode=render_mode)
 cart_controller = CartController()
-
+verbose = False
 #Show member functions
 # cart_controller.fuzzy_logic.view()
 
@@ -32,7 +32,7 @@ history = []
 
 while not episode_over:
     # Choose an action: 0 = push cart left, 1 = push cart right
-    action = cart_controller.make_action(*observation, verbose=True)
+    action = cart_controller.make_action(*observation, verbose)
 
     # Take the action and see what happens
     observation, reward, terminated, truncated, info = env.step(action)

@@ -16,7 +16,7 @@ def init_simulation() -> tuple[ctrl.Antecedent, ctrl.Antecedent, ctrl.Antecedent
     """
 
     # Sets ranges
-    cart_positions_range = np.linspace(-4.8, 4.8, 101)
+    cart_positions_range = np.linspace(-2.4, 2.4, 101)
     cart_velocity_range = np.linspace(-5, 5, 101)
     pole_angles_range = np.linspace(-0.418, 0.418, 101)
     pole_angular_velocity_range = np.linspace(-5, 5, 101)
@@ -31,9 +31,9 @@ def init_simulation() -> tuple[ctrl.Antecedent, ctrl.Antecedent, ctrl.Antecedent
 
     # Membership functions
     # cart position (trapezes and triangle)
-    cart_pos['left'] = fuzz.trapmf(cart_positions_range, [-4.8, -4.8, -1.5, -0.3])
+    cart_pos['left'] = fuzz.trapmf(cart_positions_range, [-2.4, -2.4, -1.5, -0.3])
     cart_pos['center'] = fuzz.trimf(cart_positions_range, [-0.3, 0.0, 0.3])
-    cart_pos['right'] = fuzz.trapmf(cart_positions_range, [0.3, 1.5, 4.8, 4.8])
+    cart_pos['right'] = fuzz.trapmf(cart_positions_range, [0.3, 1.5, 2.4, 2.4])
 
     # cart velocity (triangles)
     cart_vel['neg'] = fuzz.trimf(cart_velocity_range, [-5, -2.5, 0])
@@ -63,8 +63,8 @@ def init_simulation() -> tuple[ctrl.Antecedent, ctrl.Antecedent, ctrl.Antecedent
 
     rules = [
 
-        # ---------- Priority A: aggressive recovery when angle and angular velocity both large
-        # If pole is tilted right and angular velocity pushing it further right -> strong right
+        # Recover pole to balance
+        # If pole is large tilted and angular velocity pushing it further side -> strong side
         ctrl.Rule(pole_angle['PL'] & pole_vel['PL'], force['sright']),
         ctrl.Rule(pole_angle['NL'] & pole_vel['NL'], force['sleft']),
         # If pole large but angular velocity is smaller or opposite sign -> moderate correction
@@ -76,10 +76,11 @@ def init_simulation() -> tuple[ctrl.Antecedent, ctrl.Antecedent, ctrl.Antecedent
         # If pole large AND cart_vel already pushing away, be aggressive in the correcting direction
         ctrl.Rule(pole_angle['PL'] & cart_vel['pos'], force['sright']),
         ctrl.Rule(pole_angle['NL'] & cart_vel['neg'], force['sleft']),
-        # ---------- Priority B: medium responses for medium tilt or angular velocity
+        # If pole is slightly tilted or velocity is moving the pole, correct the direction
         ctrl.Rule(pole_angle['PS'] | pole_vel['PS'], force['right']),
         ctrl.Rule(pole_angle['NS'] | pole_vel['NS'], force['left']),
-        # ---------- Priority C: centering & damping when pole is essentially balanced
+
+        #Centering
         # These fire only when pole is nearly vertical (pole_angle Z and pole_vel Z) — prevents centering while balancing
         # Strong centering if pole is balanced but cart is significantly off-center
         ctrl.Rule(pole_angle['Z'] & pole_vel['Z'] & cart_pos['right'], force['sleft']),
@@ -93,12 +94,12 @@ def init_simulation() -> tuple[ctrl.Antecedent, ctrl.Antecedent, ctrl.Antecedent
         ctrl.Rule(pole_angle['Z'] & cart_pos['right'], force['left']),
         ctrl.Rule(pole_angle['Z'] & cart_pos['left'], force['right']),
 
-        # ---------- Priority D: anti-oscillation / damping
+        # Dampening
         # If pole near-zero but angular velocity non-zero, damp angular velocity
         ctrl.Rule(pole_angle['Z'] & pole_vel['PS'], force['right']),
         ctrl.Rule(pole_angle['Z'] & pole_vel['NS'], force['left']),
-        # If pole slightly tilted but angular velocity large and of opposite sign (returning),
-        # choose a moderate action (avoid hitting too hard)
+        # If pole slightly is tilted but angular velocity large and of opposite sign (returning),
+        # choose a moderate action
         ctrl.Rule(pole_angle['PS'] & pole_vel['NL'], force['right']),
         ctrl.Rule(pole_angle['NS'] & pole_vel['PL'], force['left']),
 

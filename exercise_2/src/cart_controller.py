@@ -22,7 +22,11 @@ class CartController:
         """
         Make an action based on the state.
 
-        :param state: The SimulationState object.
+        :param cart_position: cart position
+        :param cart_velocity: cart velocity
+        :param pole_angle: pole angle
+        :param pole_angular_velocity: pole angular velocity
+        :param verbose: log the actions
         :return action: The action to take.
         """
         if verbose:
