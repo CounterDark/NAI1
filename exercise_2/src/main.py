@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Literal
 import gymnasium as gym
 from cart_controller import CartController
@@ -6,17 +5,16 @@ from cart_controller import CartController
 # Create our training environment - a cart with a pole that needs balancing
 render_mode: Literal["human", "rgb_array"] = "human"
 env = gym.make("CartPole-v1", render_mode=render_mode)
-cart_controller = CartController()
 verbose = False
-#Show member functions
-# cart_controller.fuzzy_logic.view()
+
+cart_controller = CartController(verbose=verbose)
 
 # Reset environment to start a new episode
 observation, info = env.reset()
 # observation: what the agent can "see" - cart position, velocity, pole angle, etc.
 # info: extra debugging information (usually not needed for basic learning)
 
-print(f"Starting observation:", end="\n")
+print("Starting observation:", end="\n")
 print(f"CartPosition: {observation[0]}", end="\n")
 print(f"CartVelocity: {observation[1]}", end="\n")
 print(f"PoleAngle: {observation[2]}", end="\n")
@@ -28,11 +26,9 @@ print(f"PoleVelocity: {observation[3]}", end="\n")
 episode_over = False
 total_reward = 0.0
 
-history = []
-
 while not episode_over:
     # Choose an action: 0 = push cart left, 1 = push cart right
-    action = cart_controller.make_action(*observation, verbose)
+    action = cart_controller.make_action(*observation)
 
     # Take the action and see what happens
     observation, reward, terminated, truncated, info = env.step(action)
