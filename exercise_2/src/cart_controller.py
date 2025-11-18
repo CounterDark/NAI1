@@ -1,4 +1,4 @@
-from exercise_2.src.fuzzy_logic import Action, FuzzyLogic
+from fuzzy_logic import Action, FuzzyLogic
 
 
 class CartController:
