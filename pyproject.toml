@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "easyai>=2.0.12",
     "gymnasium[classic-control]>=1.2.1",
+    "httpx>=0.28.1",
     "matplotlib>=3.10.7",
     "networkx>=3.5",
     "packaging>=25.0",
