@@ -1,0 +1,10 @@
+--- Sample Prediction (Seeds - Decision Tree) ---
+Features: [[16.82   15.51    0.8786  6.017   3.486   4.004   5.841 ]]
+True Class: 2
+Predicted Class: 2
+
+--- Sample Prediction (Mushroom - Decision Tree) ---
+Features: [[5. 0. 9. 0. 2. 1. 0. 0. 7. 0. 1. 1. 1. 4. 6. 0. 2. 1. 2. 1. 4. 0.]]
+True Class: 1
+Predicted Class: 1
+

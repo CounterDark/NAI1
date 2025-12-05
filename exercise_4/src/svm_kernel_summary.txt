@@ -9,8 +9,8 @@ Mushroom dataset: best SVM params: {'svc__C': 0.1, 'svc__kernel': 'linear'}
 Mushroom SVM accuracy: 0.9985
 
 
-Short notes on kernels (to include in repository README):
+Short notes on kernels:
 - linear: good for linearly separable data; simple; fewer hyperparams.
-- rbf: flexible; maps to infinite-dim; often good default; gamma controls locality (large gamma -> more complex, risk overfit).
+- rbf: flexible; maps to infinite-dim; often good default.
 - poly: useful if polynomial relationships; degree controls complexity.
 - sigmoid: rarely best; behaves like NN activation; use sparingly.

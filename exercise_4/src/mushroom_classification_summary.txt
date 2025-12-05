@@ -1,8 +1,8 @@
 === Results for mushroom ===
 
-Decision Tree (full features) accuracy: 1.0000
+Decision Tree accuracy: 1.0000
 
-Decision Tree classification report:
+Decision Tree report:
               precision    recall  f1-score   support
 
            0     1.0000    1.0000    1.0000      1052
@@ -17,11 +17,11 @@ Decision Tree confusion matrix:
 [[1052    0]
  [   0  979]]
 
-SVM (best via gridsearch) accuracy: 0.9985
+SVM accuracy: 0.9985
 
 SVM best params: {'svc__C': 0.1, 'svc__kernel': 'linear'}
 
-SVM classification report:
+SVM report:
               precision    recall  f1-score   support
 
            0     0.9972    1.0000    0.9986      1052

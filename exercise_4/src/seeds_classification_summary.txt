@@ -1,8 +1,8 @@
 === Results for seeds ===
 
-Decision Tree (full features) accuracy: 0.9434
+Decision Tree accuracy: 0.9434
 
-Decision Tree classification report:
+Decision Tree report:
               precision    recall  f1-score   support
 
            1     0.9412    0.8889    0.9143        18
@@ -19,11 +19,11 @@ Decision Tree confusion matrix:
  [ 0 18  0]
  [ 1  0 16]]
 
-SVM (best via gridsearch) accuracy: 0.9245
+SVM accuracy: 0.9245
 
 SVM best params: {'svc__C': 10, 'svc__kernel': 'linear'}
 
-SVM classification report:
+SVM report:
               precision    recall  f1-score   support
 
            1     0.9375    0.8333    0.8824        18
