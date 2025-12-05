@@ -357,6 +357,22 @@ class ClassificationApp:
             "feature_names": feature_names,
         }
 
+    def save_plot(self, title: str) -> None:
+        """
+        Save the current plot to the images directory.
+
+        Args:
+            title: The title of the plot, used for the filename.
+        """
+        images_dir = os.path.join(self.base_dir, "..", "images")
+        os.makedirs(images_dir, exist_ok=True)
+        # Sanitize title for filename
+        safe_title = title.replace(" ", "_").replace("(", "").replace(")", "")
+        out_path = os.path.join(images_dir, f"{safe_title}.png")
+        plt.savefig(out_path)
+        print(f"Saved plot to {out_path}")
+        plt.close()
+
     def visualize_boundary(
         self,
         clf: BaseEstimator,
@@ -395,7 +411,8 @@ class ClassificationApp:
         plt.xlabel(feature_names[indices[0]])
         plt.ylabel(feature_names[indices[1]])
         plt.title(title)
-        plt.show()
+
+        self.save_plot(title)
 
     def predict_sample(
         self,
