@@ -1,0 +1,16 @@
+SVM Kernel summary (simple conclusions based on GridSearch metrics):
+
+Seeds dataset: best SVM params: {'svc__C': 10, 'svc__kernel': 'linear'}
+
+Seeds SVM accuracy: 0.9245
+
+Mushroom dataset: best SVM params: {'svc__C': 0.1, 'svc__kernel': 'linear'}
+
+Mushroom SVM accuracy: 0.9985
+
+
+Short notes on kernels (to include in repository README):
+- linear: good for linearly separable data; simple; fewer hyperparams.
+- rbf: flexible; maps to infinite-dim; often good default; gamma controls locality (large gamma -> more complex, risk overfit).
+- poly: useful if polynomial relationships; degree controls complexity.
+- sigmoid: rarely best; behaves like NN activation; use sparingly.

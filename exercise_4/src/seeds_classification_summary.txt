@@ -1,0 +1,42 @@
+=== Results for seeds ===
+
+Decision Tree (full features) accuracy: 0.9434
+
+Decision Tree classification report:
+              precision    recall  f1-score   support
+
+           1     0.9412    0.8889    0.9143        18
+           2     1.0000    1.0000    1.0000        18
+           3     0.8889    0.9412    0.9143        17
+
+    accuracy                         0.9434        53
+   macro avg     0.9434    0.9434    0.9429        53
+weighted avg     0.9444    0.9434    0.9434        53
+
+
+Decision Tree confusion matrix:
+[[16  0  2]
+ [ 0 18  0]
+ [ 1  0 16]]
+
+SVM (best via gridsearch) accuracy: 0.9245
+
+SVM best params: {'svc__C': 10, 'svc__kernel': 'linear'}
+
+SVM classification report:
+              precision    recall  f1-score   support
+
+           1     0.9375    0.8333    0.8824        18
+           2     1.0000    1.0000    1.0000        18
+           3     0.8421    0.9412    0.8889        17
+
+    accuracy                         0.9245        53
+   macro avg     0.9265    0.9248    0.9237        53
+weighted avg     0.9281    0.9245    0.9244        53
+
+
+SVM confusion matrix:
+[[15  0  3]
+ [ 0 18  0]
+ [ 1  0 16]]
+
