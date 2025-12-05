@@ -1,0 +1,22 @@
+SHELL := /bin/sh
+
+.PHONY: setup exe1 exe2 exe3 exe4 clean
+
+setup:
+	uv sync
+
+exe1:
+	cd exercise_1 && uv run python src/main.py $(ARGS)
+
+exe2:
+	cd exercise_2 && uv run python src/main.py $(ARGS)
+
+exe3:
+	cd exercise_3 && uv run python src/main.py $(ARGS)
+
+exe4:
+	cd exercise_4 && uv run python src/main.py
+
+clean:
+	rm -rf .venv
+	rm -rf uv.lock
