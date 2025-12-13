@@ -17,6 +17,9 @@ exe3:
 exe4:
 	cd exercise_4 && uv run python src/main.py
 
+exe5:
+	cd exercise_5 && uv run python src/main.py
+
 clean:
 	rm -rf .venv
 	rm -rf uv.lock
