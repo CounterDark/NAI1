@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 
-.PHONY: setup exe1 exe2 exe3 exe4 clean
+.PHONY: setup exe1 exe2 exe3 exe4 exe5 clean
 
 setup:
 	uv sync
@@ -18,7 +18,7 @@ exe4:
 	cd exercise_4 && uv run python src/main.py
 
 exe5:
-	cd exercise_5 && uv run python src/main.py
+	cd exercise_5 && uv run python src/main.py $(ARGS)
 
 clean:
 	rm -rf .venv
