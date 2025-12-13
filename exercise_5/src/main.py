@@ -2,6 +2,7 @@ import argparse
 import os
 
 from modules.animal_classifier import AnimalClassifier
+from modules.clothing_classifier import ClothingClassifier
 from modules.mushroom_classifier import MushroomClassifier
 
 
@@ -94,14 +95,56 @@ def run_animal_classifier() -> None:
     classifier.generate_confusion_matrix(test_images, test_labels)
 
 
+def run_clothing_classifier() -> None:
+    """
+    Runs the Clothing Classifier (Fashion-MNIST) workflow:
+    1. Loads Data.
+    2. Builds both MLP and CNN models.
+    3. Trains both models.
+    4. Evaluates and compares them.
+    """
+    print("\n--- Running Clothing Classifier (Fashion-MNIST) ---")
+
+    # Define model path
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(base_dir)
+    model_base_path = os.path.join(project_root, "models", "clothing_model.keras")
+
+    classifier = ClothingClassifier()
+
+    # Load data
+    train_images, test_images, train_labels, test_labels = (
+        classifier.load_and_preprocess_data()
+    )
+
+    # Build models
+    classifier.build_mlp_model()
+    classifier.build_cnn_model()
+
+    # Train models
+    print("\n--- Training MLP Model ---")
+    classifier.train_mlp(train_images, train_labels, epochs=15)
+
+    print("\n--- Training CNN Model ---")
+    classifier.train_cnn(train_images, train_labels, epochs=15)
+
+    # Evaluate comparison
+    classifier.evaluate_models(test_images, test_labels)
+
+    # Save models
+    classifier.save_models(model_base_path)
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Mushroom or Animal Classifier.")
+    parser = argparse.ArgumentParser(
+        description="Run Mushroom, Animal, or Clothing Classifier."
+    )
     parser.add_argument(
         "--task",
         type=str,
-        choices=["mushrooms", "animals"],
+        choices=["mushrooms", "animals", "clothes"],
         required=True,
-        help="Select which classifier to run: 'mushrooms' for edible/poisonous classification, 'animals' for CIFAR-10 image classification.",
+        help="Select classifier: 'mushrooms', 'animals', or 'clothes'.",
     )
 
     args = parser.parse_args()
@@ -110,6 +153,8 @@ def main() -> None:
         run_mushroom_classifier()
     elif args.task == "animals":
         run_animal_classifier()
+    elif args.task == "clothes":
+        run_clothing_classifier()
 
 
 if __name__ == "__main__":
