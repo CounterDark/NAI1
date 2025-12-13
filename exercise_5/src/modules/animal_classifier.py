@@ -2,10 +2,13 @@ import os
 import ssl
 from typing import Optional, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from keras import datasets, layers, models
 from keras.callbacks import EarlyStopping, History, ReduceLROnPlateau
 from keras.losses import SparseCategoricalCrossentropy
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 
 
@@ -181,6 +184,57 @@ class AnimalClassifier:
         print(f"Test Loss: {loss:.4f}")
         print(f"Test Accuracy: {accuracy:.4f}")
         return loss, accuracy
+
+    def generate_confusion_matrix(
+        self, test_images: np.ndarray, test_labels: np.ndarray
+    ) -> None:
+        """
+        Generates and displays a confusion matrix for the test data.
+        """
+        if self.model is None:
+            raise ValueError("Model not built. Call build_model() first.")
+
+        print("Generating confusion matrix...")
+
+        # 1. Predict on test data
+        y_pred_proba = self.model.predict(test_images)
+
+        # 2. Convert probabilities to classes
+        y_pred = np.argmax(y_pred_proba, axis=1)
+
+        # Ensure test_labels are 1D (if they are one-hot encoded or 2D column vector)
+        if test_labels.ndim > 1:
+            y_true = test_labels.flatten()
+        else:
+            y_true = test_labels
+
+        # 3. Generate confusion matrix
+        cm = confusion_matrix(y_true, y_pred)
+
+        # 4. Display confusion matrix using seaborn
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            xticklabels=self.class_names,
+            yticklabels=self.class_names,
+        )
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title("Confusion Matrix - CIFAR-10")
+
+        # Save the plot effectively
+        save_path = os.path.join(
+            os.path.dirname(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            ),
+            "animal_classifier_confusion_matrix.png",
+        )
+        print(f"Saving confusion matrix to {save_path}...")
+        plt.savefig(save_path)
+        plt.close()  # Close to free memory
 
     def save_model(self, filepath: str) -> None:
         """

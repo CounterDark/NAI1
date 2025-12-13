@@ -91,6 +91,7 @@ def run_animal_classifier() -> None:
         classifier.save_model(model_path)
 
     classifier.evaluate(test_images, test_labels)
+    classifier.generate_confusion_matrix(test_images, test_labels)
 
 
 def main() -> None:
