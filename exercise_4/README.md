@@ -35,7 +35,7 @@ You can run the classification script using the Makefile or directly with uv.
 Option A: using Makefile
 
 ```bash
-make run
+make exe4
 ```
 
 Option B: using uv directly

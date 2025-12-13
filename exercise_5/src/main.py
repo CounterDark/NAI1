@@ -1,3 +1,47 @@
+"""
+Project: Multtiple model classifiers
+Authors: Mateusz Anikiej and Aleksander Kunkowski
+
+Description:
+This script trains multiple model classifiers on different datasets.
+
+Usage:
+    python src/main.py --task <task>
+
+Tasks:
+    mushrooms: Train a Mushroom Classifier
+    animals: Train an Animal Classifier
+    clothes: Train a Clothing Classifier
+    imdb: Train an IMDB Review Sentiment Classifier
+
+Mushroom Classifier:
+    - Dataset: Mushrooms
+    - Model: MLP
+    - Task: Classification
+    - Metrics: Accuracy
+Compared with the model from exercise 4.
+
+Animal Classifier:
+    - Dataset: CIFAR-10
+    - Model: CNN
+    - Task: Classification
+    - Metrics: Accuracy
+Prepared confusion matrix.
+
+Clothing Classifier:
+    - Dataset: Fashion-MNIST
+    - Model: MLP, CNN
+    - Task: Classification
+    - Metrics: Accuracy
+Created two models and compared them.
+
+IMDB Review Sentiment Classifier:
+    - Dataset: IMDB Movie Reviews
+    - Model: RNN (LSTM)
+    - Task: Sentiment Analysis
+    - Metrics: Accuracy
+"""
+
 import argparse
 import os
 

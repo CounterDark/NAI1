@@ -44,7 +44,7 @@ python src/main.py --user "Paweł Czapiewski"
 or
 
 ```bash
-make run ARGS="--user 'Paweł Czapiewski'"
+make exe3 ARGS="--user 'Paweł Czapiewski'"
 ```
 
 ## How it works

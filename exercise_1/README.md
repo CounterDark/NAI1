@@ -40,7 +40,7 @@ Start the game in the console.
 Option A: using Makefile
 
 ```sh
-make run
+make exe1
 ```
 
 Option B: using uv directly
