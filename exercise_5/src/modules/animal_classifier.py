@@ -3,9 +3,11 @@ import ssl
 from typing import Optional, Tuple
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras import datasets, layers, models  # type: ignore
-from tensorflow.keras.callbacks import History  # type: ignore
+from keras import datasets, layers, models
+from keras.callbacks import EarlyStopping, History, ReduceLROnPlateau
+from keras.losses import SparseCategoricalCrossentropy
+from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
 
 
 class AnimalClassifier:
@@ -114,26 +116,64 @@ class AnimalClassifier:
         # from_logits=True tells the loss function to apply softmax internally.
         self.model.compile(
             optimizer="adam",
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            loss=SparseCategoricalCrossentropy(from_logits=True),
             metrics=["accuracy"],
         )
 
         self.model.summary()
 
-    def train(
-        self, train_images: np.ndarray, train_labels: np.ndarray, epochs: int = 10
+    def train_with_augmentation(
+        self, train_images: np.ndarray, train_labels: np.ndarray
     ) -> History:
         """
-        Trains the model on the training data.
+        Trains the model on the training data using data augmentation.
+        Data augmentation generates new training samples by randomly transforming
+        existing images (rotation, shift, flip, etc.). This helps reduce overfitting
+        and improves the model's ability to generalize to new data.
         """
         if self.model is None:
             raise ValueError("Model not built. Call build_model() first.")
 
-        print("Starting training...")
-        # validation_split could be used, or validation_data if we have a separate set.
-        # Here we rely on the user passing data, but commonly we split training data or use test data for validation during dev.
+        print("Starting training with data augmentation...")
+
+        # Create an ImageDataGenerator for data augmentation
+        # rotation_range=15: Randomly rotate images by up to 15 degrees
+        # width_shift_range=0.1: Randomly shift images horizontally by up to 10% of width
+        # height_shift_range=0.1: Randomly shift images vertically by up to 10% of height
+        # horizontal_flip=True: Randomly flip images horizontally
+        datagen = ImageDataGenerator(
+            rotation_range=15,
+            width_shift_range=0.1,
+            height_shift_range=0.1,
+            horizontal_flip=True,
+            validation_split=0.1,
+        )
+
+        # Split data into training and validation sets
+        X_train, X_val, y_train, y_val = train_test_split(
+            train_images, train_labels, test_size=0.1, random_state=42
+        )
+
+        # Fit the augmentation generator on the training data
+        datagen.fit(X_train)
+
+        # Stop if validation loss doesn't improve for 10 epochs
+        early_stopping = EarlyStopping(
+            monitor="val_loss", patience=10, restore_best_weights=True
+        )
+
+        # Reduce learning rate if validation loss doesn't improve for 5 epochs
+        reduce_lr = ReduceLROnPlateau(
+            monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
+        )
+
+        # Train the model using the generator
         history = self.model.fit(
-            train_images, train_labels, epochs=epochs, validation_split=0.1, verbose=1
+            datagen.flow(X_train, y_train, batch_size=64),
+            epochs=100,
+            validation_data=(X_val, y_val),
+            callbacks=[early_stopping, reduce_lr],
+            verbose=1,
         )
         return history
 

@@ -72,8 +72,7 @@ def run_animal_classifier() -> None:
     classifier = AnimalClassifier()
 
     # Load and preprocess data
-    # CIFAR-10 is a standard dataset included in TensorFlow/Keras, so we don't need a local text file path.
-    # Data is downloaded automatically if not present in cache.
+    # CIFAR-10 is a standard dataset included in TensorFlow/Keras.
     train_images, test_images, train_labels, test_labels = (
         classifier.load_and_preprocess_data()
     )
@@ -86,24 +85,16 @@ def run_animal_classifier() -> None:
         # Build Convolutional Neural Network (CNN) architecture
         classifier.build_model()
 
-        # Train the model
-        # Epochs: number of times the model sees the entire dataset.
-        classifier.train(train_images, train_labels, epochs=10)
-
-        # Save the trained model
+        # Train the model using Data Augmentation to improve accuracy and generalization
+        print("Training with Data Augmentation...")
+        classifier.train_with_augmentation(train_images, train_labels)
         classifier.save_model(model_path)
 
-    # Evaluate the model
     classifier.evaluate(test_images, test_labels)
 
 
 def main() -> None:
-    # Create argument parser to handle command line arguments
     parser = argparse.ArgumentParser(description="Run Mushroom or Animal Classifier.")
-
-    # Add an argument for the task type
-    # 'choices' restricts the input to specific values.
-    # 'required=True' ensures the user must provide this argument.
     parser.add_argument(
         "--task",
         type=str,
@@ -112,10 +103,8 @@ def main() -> None:
         help="Select which classifier to run: 'mushrooms' for edible/poisonous classification, 'animals' for CIFAR-10 image classification.",
     )
 
-    # Parse arguments
     args = parser.parse_args()
 
-    # Route to the appropriate function based on user input
     if args.task == "mushrooms":
         run_mushroom_classifier()
     elif args.task == "animals":
