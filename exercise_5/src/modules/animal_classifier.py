@@ -6,7 +6,6 @@ import numpy as np
 from keras import datasets, layers, models
 from keras.callbacks import EarlyStopping, History, ReduceLROnPlateau
 from keras.losses import SparseCategoricalCrossentropy
-from keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 
 
@@ -18,7 +17,6 @@ class AnimalClassifier:
 
     def __init__(self) -> None:
         self.model: Optional[models.Sequential] = None
-        # Class names for CIFAR-10
         self.class_names = [
             "airplane",
             "automobile",
@@ -41,7 +39,7 @@ class AnimalClassifier:
         """
         print("Loading CIFAR-10 dataset...")
 
-        # Workaround for SSL certificate verification failure on some systems (e.g. macOS)
+        # Workaround for SSL certificate verification failure on macOS
         # This allows downloading the dataset without installing specific certificates.
         try:
             _create_unverified_https_context = ssl._create_unverified_context
@@ -55,12 +53,9 @@ class AnimalClassifier:
             datasets.cifar10.load_data()
         )
 
-        # Normalize pixel values to be between 0 and 1
-        # Pixel values are integers between 0 and 255. Dividing by 255.0 converts them to floats [0, 1].
-        # This helps the neural network converge faster during training.
-        print("Normalizing pixel values...")
-        train_images = train_images / 255.0
-        test_images = test_images / 255.0
+        # Ensure data is float32 for consistency
+        train_images = train_images.astype("float32")
+        test_images = test_images.astype("float32")
 
         print(f"Training data shape: {train_images.shape}")
         print(f"Test data shape: {test_images.shape}")
@@ -69,20 +64,28 @@ class AnimalClassifier:
 
     def build_model(self) -> None:
         """
-        Builds a Convolutional Neural Network (CNN).
+        Builds a Convolutional Neural Network (CNN) with in-model data augmentation.
         CNNs are particularly good at finding patterns in images.
         """
         print("Building Convolutional Neural Network...")
         self.model = models.Sequential()
 
+        # Data Augmentation Layers
+        # Note: These layers are active only during training (training=True)
+        self.model.add(layers.RandomFlip("horizontal"))
+        self.model.add(layers.RandomTranslation(height_factor=0.1, width_factor=0.1))
+        self.model.add(layers.RandomRotation(0.1))
+
+        # Rescaling Layer
+        # Normalizes pixel values from [0, 255] to [0, 1]
+        self.model.add(layers.Rescaling(1.0 / 255))
+
         # Convolutional Block 1
         # Conv2D: This layer creates a convolution kernel that is convolved with the layer input
         # to produce a tensor of outputs.
         # 32 filters of size (3, 3). relu activation introduces non-linearity.
-        # input_shape=(32, 32, 3) corresponds to height, width, and color channels (RGB) of CIFAR-10 images.
-        self.model.add(
-            layers.Conv2D(32, (3, 3), activation="relu", input_shape=(32, 32, 3))
-        )
+        # input_shape is already defined in the first augmentation layer
+        self.model.add(layers.Conv2D(32, (3, 3), activation="relu"))
 
         # MaxPooling2D: Downsamples the input representation by taking the maximum value over the window defined by pool_size (2, 2).
         # This reduces the spatial dimensions (height, width) of the output volume.
@@ -126,36 +129,20 @@ class AnimalClassifier:
         self, train_images: np.ndarray, train_labels: np.ndarray
     ) -> History:
         """
-        Trains the model on the training data using data augmentation.
-        Data augmentation generates new training samples by randomly transforming
-        existing images (rotation, shift, flip, etc.). This helps reduce overfitting
-        and improves the model's ability to generalize to new data.
+        Trains the model on the training data.
+        Data augmentation is part of the model layers, this function only
+        uses standard model.fit() with raw data (augmentation is automatic).
         """
         if self.model is None:
             raise ValueError("Model not built. Call build_model() first.")
 
-        print("Starting training with data augmentation...")
-
-        # Create an ImageDataGenerator for data augmentation
-        # rotation_range=15: Randomly rotate images by up to 15 degrees
-        # width_shift_range=0.1: Randomly shift images horizontally by up to 10% of width
-        # height_shift_range=0.1: Randomly shift images vertically by up to 10% of height
-        # horizontal_flip=True: Randomly flip images horizontally
-        datagen = ImageDataGenerator(
-            rotation_range=15,
-            width_shift_range=0.1,
-            height_shift_range=0.1,
-            horizontal_flip=True,
-            validation_split=0.1,
-        )
+        print("Starting training...")
 
         # Split data into training and validation sets
+        # We pass raw images (0-255) because the model handles rescaling
         X_train, X_val, y_train, y_val = train_test_split(
             train_images, train_labels, test_size=0.1, random_state=42
         )
-
-        # Fit the augmentation generator on the training data
-        datagen.fit(X_train)
 
         # Stop if validation loss doesn't improve for 10 epochs
         early_stopping = EarlyStopping(
@@ -167,10 +154,13 @@ class AnimalClassifier:
             monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
         )
 
-        # Train the model using the generator
+        # Train the model using standard .fit()
+        # Augmentation layers in the model will automatically apply transforms to X_train
         history = self.model.fit(
-            datagen.flow(X_train, y_train, batch_size=64),
+            X_train,
+            y_train,
             epochs=100,
+            batch_size=64,
             validation_data=(X_val, y_val),
             callbacks=[early_stopping, reduce_lr],
             verbose=1,
