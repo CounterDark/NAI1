@@ -20,6 +20,9 @@ exe4:
 exe5:
 	cd exercise_5 && uv run python src/main.py $(ARGS)
 
+exe6:
+	cd exercise_6 && uv run python src/main.py
+
 clean:
 	rm -rf .venv
 	rm -rf uv.lock
