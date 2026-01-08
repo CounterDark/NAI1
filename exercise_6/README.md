@@ -55,11 +55,12 @@ This project implements a "Smart Ad Player" that pauses the advertisement when t
 - **Attention Logic**:
   - If eyes are detected (specifically more than 1 rect), the system assumes the user is "PATRZY" (Looking).
   - If no eyes are detected, it assumes "NIE PATRZY" (Not Looking).
+  - After 5 seconds of continuous not looking, we reset the current ad
 - **Smart Playback**:
   - The video advertisement plays only when the user is looking.
   - If the user looks away, the video pauses immediately.
   - When paused, a "REKLAMA ZATRZYMANA" (Ad Paused) overlay appears on the video window.
-- **Looping**: The advertisement video automatically loops when it reaches the end.
+- **Looping**: The advertisement video automatically loops to next one when it reaches the end.
 
 ### Technologies Used
 

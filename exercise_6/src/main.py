@@ -21,14 +21,17 @@ from pathlib import Path
 from typing import Optional
 
 import cv2
+import time
 import numpy as np
 
 
 def main() -> None:
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    base_dir = Path(__file__).resolve().parent.parent
 
-    # ====== HAAR ======
-    haar_path = BASE_DIR / "haar_cascade_files" / "haarcascade_eye.xml"
+    not_looking_limit = 5.0
+    not_looking_start = None
+
+    haar_path = base_dir / "haar_cascade_files" / "haarcascade_eye.xml"
     eye_cascade = cv2.CascadeClassifier(str(haar_path))
 
     if eye_cascade.empty():
@@ -36,24 +39,36 @@ def main() -> None:
             f"Unable to load the eye cascade classifier xml file from {haar_path}"
         )
 
-    # ====== KAMERA ======
+    # Camera
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise IOError("Cannot open webcam")
 
-    # ====== REKLAMA ======
-    ad_path = BASE_DIR / "ads" / "ad.mp4"
-    ad = cv2.VideoCapture(str(ad_path))
+    # Ad
+    ads_path = base_dir / "ads"
+    ads = []
+    for f in ads_path.iterdir():
+        if f.suffix.lower() in [".mp4", ".avi", ".mov"]:
+            print(f"Added ad {f}")
+            ads.append(f)
+    if len(ads) == 0:
+        raise IOError("Ads folder is empty")
+
+    current_ad_index = 0
+
+    ad = cv2.VideoCapture(str(ads[current_ad_index]))
     if not ad.isOpened():
-        raise IOError(f"Cannot open video file {ad_path}")
+        raise IOError(f"Cannot open video file {ads[current_ad_index]}")
 
     paused: bool = False
     last_ad_frame: Optional[np.ndarray] = None
 
     print("Press 'Esc' to exit.")
 
+    ret_ad, last_ad_frame = ad.read()
+
     while True:
-        # ====== KAMERA ======
+        # read camera
         ret, frame = cap.read()
         if not ret:
             print("Failed to grab frame from webcam")
@@ -62,30 +77,48 @@ def main() -> None:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         eye_rects = eye_cascade.detectMultiScale(gray, 1.3, 5)
 
-        # ====== LOGIKA UWAGI ======
+        # check if both eyes present
         if len(eye_rects) > 1:
             looking = True
-            print("PATRZY    ", end="\r")
+            # print("PATRZY    ", end="\r")
         else:
             looking = False
-            print("NIE PATRZY", end="\r")
+            # print("NIE PATRZY", end="\r")
+
+        current_time = time.time()
+
+        # check countdown start
+        not_looking_start = None if looking else current_time if not_looking_start is None else not_looking_start
+
+        #reset video after set limit
+        if not_looking_start is not None:
+            if current_time - not_looking_start >= not_looking_limit:
+                ad.release()
+                ad = cv2.VideoCapture(str(ads[current_ad_index]))
+                ret_ad, last_ad_frame = ad.read()
+                not_looking_start = None
 
         paused = not looking
 
-        # ====== REKLAMA ======
         ad_frame: Optional[np.ndarray] = None
-
+        # pause logc
         if not paused:
             ret_ad, ad_frame = ad.read()
+            # on ad end
             if not ret_ad:
-                # Loop video
-                ad.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                ad.release()
+                current_ad_index = current_ad_index + 1
+
+                if current_ad_index >= len(ads):
+                    current_ad_index = 0
+
+                ad = cv2.VideoCapture(str(ads[current_ad_index]))
                 ret_ad, ad_frame = ad.read()
             last_ad_frame = ad_frame
         else:
             ad_frame = last_ad_frame
 
-        # ====== INFO NA EKRANIE ======
+        # show text on ad
         if paused and ad_frame is not None:
             cv2.putText(
                 ad_frame,
@@ -97,15 +130,21 @@ def main() -> None:
                 3,
             )
 
-        # ====== OKNA ======
+        # show ad window
         if ad_frame is not None:
-            cv2.imshow("Reklama", ad_frame)
+            ad_frame_resized = cv2.resize(ad_frame, (900, 600))
+            cv2.imshow("Reklama", ad_frame_resized)
+        else:
+            print("No ad frame")
 
-        cv2.imshow("Kamera", frame)
+        # show camera window
+        # cv2.imshow("Kamera", frame)
 
+        # exit on esc
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
+    # cleanup
     cap.release()
     ad.release()
     cv2.destroyAllWindows()
