@@ -1,6 +1,25 @@
-import cv2
-import numpy as np
+"""
+Project: Smart Ad Player
+Authors: Aleksander Kunkowski and Mateusz Anikiej
+
+Description:
+This script implements a "Smart Ad Player" that pauses the advertisement when the viewer is not looking at the screen.
+It uses Haar Cascade classifiers for eye detection through the webcam.
+
+Features:
+- Eye Detection: Uses Haar Cascade to detect eyes in the webcam feed.
+- Attention Logic: Pauses the video if no eyes (or fewer than 2) are detected.
+- Video Playback: Plays a sample advertisement video.
+- Real-time Feedback: Displays "PATRZY" (Looking) or "NIE PATRZY" (Not Looking) in the console and overlays "REKLAMA ZATRZYMANA" on the video when paused.
+
+Usage:
+    Run the script directly. Ensure a webcam is connected and the 'ad.mp4' file exists in the 'ads' directory.
+    Press 'Esc' to exit.
+"""
+
 from pathlib import Path
+
+import cv2
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,7 +35,7 @@ if eye_cascade.empty():
 cap = cv2.VideoCapture(0)
 
 # ====== REKLAMA ======
-ad = cv2.VideoCapture(str(BASE_DIR / 'ads' / "ad.mp4"))
+ad = cv2.VideoCapture(str(BASE_DIR / "ads" / "ad.mp4"))
 
 paused = False
 last_ad_frame = None
@@ -59,7 +78,7 @@ while True:
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
             (0, 0, 255),
-            3
+            3,
         )
 
     # ====== OKNA ======
