@@ -1,12 +1,36 @@
 """
+Exercise 7 — Reinforcement Learning (Atari / ALE)
 
-Run:
+This script trains and runs a Deep RL agent (Stable-Baselines3) on an Atari game
+from the Arcade Learning Environment (ALE) via Gymnasium. Observations are
+image-based (frames), suitable for a CNN policy.
+
+Authors: Mateusz Anikiej, Aleksander Kunkowski
+
+Prerequisites
+-------------
+- Python + project dependencies installed (see repo root `pyproject.toml`)
+- Atari ROMs installed (one-time):
+
+    ```bash
+    AutoROM --accept-license
+    ```
+
+Run
+---
+Option A (Makefile):
   make exe7 ARGS="train"
   make exe7 ARGS="run"
 
-  or
+Option B (uv):
+  cd exercise_7
   uv run python src/main.py train
   uv run python src/main.py run
+
+Artifacts
+---------
+- Models: `exercise_7/models/` (best and final model)
+- Logs:   `exercise_7/runs/` (TensorBoard)
 """
 
 import os
