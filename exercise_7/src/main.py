@@ -54,7 +54,7 @@ class Config:
     # Environment
     env_id: str = "ALE/Seaquest-v5"
     seed: int = 0
-    device: Literal["auto", "mps", "cpu"] = "mps"
+    device: Literal["auto", "mps", "cpu"] = "cpu"
 
     # Throughput
     n_envs: int = 4
